@@ -1,0 +1,3 @@
+id,nombre,direccion,comuna,barrio,circunscri,longitude,latitude,geojson
+1,Ardsley & Tingley,213a Bradford Road,,,I,53.7243483,-1.5501082,"{""type"":""Point"",""coordinates"":[53.72435,-1.55010820000006]}"
+2,Armley library,2 Stocks Hill,,,I,53.797172,-1.588392,"{""type"":""Point"",""coordinates"":[53.79717,-1.58839]}"
