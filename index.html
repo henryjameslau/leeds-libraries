@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+svg{
+    fill: white;
+}
+
+path {
+    stroke-linejoin: round;
+}
+
+.points {
+    fill: black;
+}
+
+.subunit {
+    fill: none;
+    stroke: #999;
+    stroke-size: 1px;
+}
+
+.voronoi {
+    fill: none;
+    fill-opacity: 0.5;
+    stroke: white;
+    stroke-width: .5px;
+}
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script>
+var width = 960, height = 500;
+
+var fill = d3.scale.category10();
+
+var projection = d3.geo.mercator()
+        .scale(132000)
+        .center([-58.45000,-34.61600])
+
+var path = d3.geo.path()
+        .projection(projection)
+        .pointRadius(1.5);
+
+var voronoi = d3.geom.voronoi();
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+queue()
+    .defer(d3.json, "caba.json")
+    .defer(d3.csv, "comisarias.csv")
+    .await(ready);
+
+function ready(error, caba, comisarias) {
+    var defs = svg.append("defs");
+
+    defs.append("path")
+        .datum(topojson.feature(caba, caba.objects.limites))
+        .attr("id", "limits")
+        .attr("d", path);
+
+    defs.append("clipPath")
+        .attr("id", "clip")
+        .append("use")
+        .attr("xlink:href", "#limits");
+
+    svg.append("use")
+        .attr("xlink:href", "#limits")
+        .attr("class", "limits");
+
+    svg.append("path")
+        .datum(topojson.mesh(caba, caba.objects.barrios))
+        .attr("class", "subunit")
+        .attr("d", path)
+
+    var coordinates = comisarias.map(function(d) { return [+d.longitude, +d.latitude]; });
+
+    svg.append("path")
+        .datum({type: "MultiPoint", coordinates: coordinates})
+        .attr("class", "points")
+        .attr("d", path)
+
+    var voronoiLayer = svg.append("g")
+        .attr("class", "land")
+        .attr("clip-path", "url(#clip)")
+
+    voronoiLayer.selectAll(".voronoi")
+        .data(voronoi(coordinates.map(projection)))
+        .enter().append("path")
+        .attr("class", "voronoi")
+        .style("fill", function(d,i) {
+            // Calculate area to use it in a color scale
+            var area = path.area(polygon(d));   // Area is always 0
+            return fill(i)
+        })
+        .attr("d", polygon)
+}
+
+function polygon(d) {
+    return "M" + d.join("L") + "Z";
+}
+
+</script>
+
+</body>
