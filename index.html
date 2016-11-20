@@ -27,9 +27,9 @@ path {
 }
 </style>
 <body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://d3js.org/queue.v1.min.js"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="d3.v3.min.js"></script>
+<script src="queue.v1.min.js"></script>
+<script src="topojson.v1.min.js"></script>
 <script>
 var width = 960, height = 500;
 
@@ -37,7 +37,7 @@ var fill = d3.scale.category10();
 
 var projection = d3.geo.mercator()
         .scale(132000)
-        .center([-58.45000,-34.61600])
+        .center([58.8008,-1.5491])
 
 var path = d3.geo.path()
         .projection(projection)
@@ -50,7 +50,7 @@ var svg = d3.select("body").append("svg")
     .attr("height", height);
 
 queue()
-    .defer(d3.json, "caba.json")
+    .defer(d3.json, "leeds.json")
     .defer(d3.csv, "comisarias.csv")
     .await(ready);
 
